@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Agriculture Advisory System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .login-container, .signup-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            width: 80%;
+            max-width: 900px;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #555;
+        }
+
+        /* Real-time alerts style */
+        #alerts {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .alert strong {
+            font-weight: bold;
+        }
+
+        .notification {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            border: 1px solid #ffeeba;
+        }
+
+        /* Dynamic background based on crop conditions */
+        .valid-crop {
+            background-color: #c8e6c9; /* Light green for valid crops */
+        }
+
+        .invalid-crop {
+            background-color: #ffebee; /* Light red for invalid crops */
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            margin-top: 40px;
+        }
+
+        .stars {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .stars span {
+            padding: 5px;
+            color: #bbb;
+        }
+
+        .stars span:hover {
+            color: #ffca28;
+        }
+
+        .stars span.selected {
+            color: #ffca28;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sign-Up Page -->
+    <div id="signupPage" class="signup-container">
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+            <div class="input-group">
+                <label for="signupUsername">Username:</label>
+                <input type="text" id="signupUsername" name="username" required placeholder="Enter your username">
+            </div>
+            <div class="input-group">
+                <label for="signupPassword">Password:</label>
+                <input type="password" id="signupPassword" name="password" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="signup-btn">Sign Up</button>
+            <p id="signupErrorMessage" class="error-message"></p>
+            <p>Already have an account? <a href="javascript:void(0);" onclick="showLogin()">Login here</a></p>
+        </form>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container" style="display:none;">
+        <h2>Digital Agriculture Advisory System</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required placeholder="Enter your username">
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+            <p id="errorMessage" class="error-message"></p>
+            <p>Don't have an account? <a href="javascript:void(0);" onclick="showSignup()">Sign Up here</a></p>
+        </form>
+    </div>
+
+    <!-- Dashboard Page (Hidden Initially) -->
+    <div id="dashboardPage" class="dashboard-container" style="display:none;">
+        <header>
+            <h1>Welcome to the Digital Agriculture Advisory System</h1>
+            <p>Your companion for smarter farming decisions</p>
+        </header>
+
+        <section class="section weather-widget">
+            <h2>Local Weather</h2>
+            <div id="weather">Loading...</div>
+        </section>
+
+        <section class="section crop-recommendations">
+            <h2>Crop Recommendations</h2>
+            <p id="crop-recommendation">Loading...</p>
+        </section>
+
+        <section class="section alerts">
+            <h2>Real-Time Alerts</h2>
+            <div id="alerts">
+                <!-- Alerts will appear here -->
+            </div>
+        </section>
+
+        <section class="section">
+            <button onclick="showAlertMessage()">Show Alert Message</button>
+        </section>
+
+        <section class="section feedback-section">
+            <h2>Give Feedback on the Software</h2>
+            <div class="stars" id="star-rating">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+            <p id="feedback-message"></p>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Digital Agriculture System</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simulate fetching weather data
+        function fetchWeather() {
+            const weatherData = {
+                temperature: 28, // in °C
+                condition: "Sunny",
+                humidity: "60%",
+                wind: "15 km/h"
+            };    
+            const weatherElement = document.getElementById('weather');
+            weatherElement.innerHTML = `
+                <p>Temperature: ${weatherData.temperature}°C</p>
+                <p>Condition: ${weatherData.condition}</p>
+                <p>Humidity: ${weatherData.humidity}</p>
+                <p>Wind: ${weatherData.wind}</p>
+            `;
+            return weatherData;
+        }
+
+        // Simulate fetching crop recommendations
+        function fetchCropRecommendations() {
+            const crops = [
+                { name: "Tomato", idealTemp: "25-30°C", condition: "Sunny" },
+                { name: "Wheat", idealTemp: "20-25°C", condition: "Partly cloudy" },
+                { name: "Rice", idealTemp: "30-35°C", condition: "Sunny" },
+                { name: "Potato", idealTemp: "15-20°C", condition: "Cloudy" },
+                { name: "Corn", idealTemp: "22-28°C", condition: "Sunny" },
+                { name: "Soybean", idealTemp: "18-24°C", condition: "Partly cloudy" }
+            ];
+
+            const weatherData = fetchWeather(); // Fetch current weather data
+            const recommendationElement = document.getElementById('crop-recommendation');
+
+            recommendationElement.innerHTML = `
+                <h3>Based on the current weather:</h3>
+                <ul>
+                    ${crops.map(crop => {
+                        const isValid = isCropValid(crop, weatherData);
+                        return `
+                            <li style="color: ${isValid ? 'green' : 'red'};">
+                                ${crop.name} (Ideal Temp: ${crop.idealTemp}, Condition: ${crop.condition})
+                                - ${isValid ? 'Valid' : 'Invalid'} for current conditions
+                            </li>
+                        `;
+                    }).join('')}
+                </ul>
+            `;
+        }
+
+        // Validate crop based on weather
+        function isCropValid(crop, weatherData) {
+            const [minTemp, maxTemp] = crop.idealTemp.split('-').map(temp => parseInt(temp.trim()));
+            const currentTemp = weatherData.temperature;
+            return currentTemp >= minTemp && currentTemp <= maxTemp;
+        }
+
+        // Show real-time alerts based on crop conditions
+        function showRealTimeAlerts() {
+            const alertsContainer = document.getElementById('alerts');
+            const alerts = [
+                { type: 'warning', message: 'Temperature is too high for some crops!' },
+                { type: 'info', message: 'Humidity levels are stable.' },
+                { type: 'critical', message: 'Severe drought warnings in the area! Take action immediately!' },
+            ];
+
+            alertsContainer.innerHTML = alerts.map(alert => {
+                return `
+                    <div class="alert ${alert.type}">
+                        <strong>${alert.type.toUpperCase()}:</strong> ${alert.message}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show alert message when the user clicks the button
+        function showAlertMessage() {
+            alert("The weather and crop conditions are evaluated, please check the recommendations section for more details.");
+        }
+
+        // Handle star rating for feedback
+        function handleStarRating(event) {
+            const stars = document.querySelectorAll('#star-rating span');
+            const rating = event.target.getAttribute('data-value');
+            
+            stars.forEach(star => {
+                if (star.getAttribute('data-value') <= rating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+
+            document.getElementById('feedback-message').innerText = `Thank you for your feedback! You rated: ${rating} stars.`;
+        }
+
+        document.getElementById('star-rating').addEventListener('click', handleStarRating);
+
+        // Show Signup form
+        function showSignup() {
+            document.getElementById('signupPage').style.display = 'block';
+            document.getElementById('loginPage').style.display = 'none';
+        }
+
+        // Show Login form
+        function showLogin() {
+            document.getElementById('signupPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'block';
+        }
+
+        // Handle Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const savedUsername = localStorage.getItem('username');
+            const savedPassword = localStorage.getItem('password');
+
+            if (username === savedUsername && password === savedPassword) {
+                alert('Login successful!');
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                fetchWeather();
+                fetchCropRecommendations();
+            } else {
+                document.getElementById('errorMessage').innerText = "Invalid username or password!";
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+
+        // Handle Sign Up form submission
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+
+            localStorage.setItem('username', username);
+            localStorage.setItem('password', password);
+
+            alert('Sign-up successful! Please log in.');
+            showLogin();
+        });
+    </script>
+</body>
+</html>
